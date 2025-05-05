@@ -82,6 +82,11 @@ conditions:
 
 ## List of Aliases/Namespaces
 
+### `gh jj`
+
+Aliases that make it easier to interact with GitHub from a [jujutsu](https://jj-vcs.github.io)
+repo that has been "colocated".
+
 ## License
 
 `gh-contrib` is available as Open Source Software, under the MIT license. See
