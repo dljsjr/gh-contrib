@@ -1,0 +1,1 @@
+get-license: '! gh api /licenses/$1 | jq -r ".body"'
