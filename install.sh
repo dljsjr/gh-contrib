@@ -19,14 +19,14 @@ to ${BOLD}gh alias import -${RESET} unless ${BOLD}--no-import${RESET} is set. Ot
 to ${BOLD}stdout${RESET}
 
 If ${BOLD}--no-install${RESET} is set, then the scripts will not be copied in to the installation directory
-at all. A convenience flag ${BOLD}--dump-yaml${RESET} is provided for this.
-
-All log messages are printed to ${BOLD}stderr${RESET}. The only information printed to ${BOLD}stdout${RESET} is
-the generated YAML if ${BOLD}--no-import${RESET} is set, so it can be easily piped or redirected.
+at all.
 
 ${BOLD}--no-install --no-import${RESET} can be combined to generate the relevant YAML without the pre-existence
 checks, which may be useful if you need to audit or make a backup of the alias definitions that would be
-imported.
+imported. A convenience flag ${BOLD}--dump-yaml${RESET} is provided for this.
+
+All log messages are printed to ${BOLD}stderr${RESET}. The only information printed to ${BOLD}stdout${RESET} is
+the generated YAML if ${BOLD}--no-import${RESET} is set, so it can be easily piped or redirected.
 
 If an alias entrypoint or subcommand already exists in the installation directory, the script will fail.
 If you want to overwrite existing files, use ${BOLD}--clobber-scripts${RESET}
@@ -121,16 +121,22 @@ for target in $aliases; do
 "
 done
 
-if [ "$do_import" -eq 0 ]; then
-  gh_args="-"
-  if [ "$clobber_aliases" -eq 0 ]; then
-    gh_args="--clobber $gh_args"
-  fi
-  cat "$SCRIPTDIR"/aliases.yaml - <<EOF | gh alias import $gh_args
-$(printf '%s' "$yaml")
-EOF
-else
+__emit_yaml() {
   cat "$SCRIPTDIR"/aliases.yaml - <<EOF
 $(printf '%s' "$yaml")
 EOF
+}
+
+do_import() {
+  gh alias import "$@"
+}
+
+if [ "$do_import" -eq 0 ]; then
+  if [ "$clobber_aliases" -eq 0 ]; then
+    __emit_yaml | do_import --clobber -
+  else
+    __emit_yaml | do_import -
+  fi
+else
+  __emit_yaml
 fi
