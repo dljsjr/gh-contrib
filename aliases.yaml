@@ -1,1 +1,2 @@
 get-license: '! gh api /licenses/$1 | jq -r ".body"'
+co: pr checkout
